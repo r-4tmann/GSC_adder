@@ -16,6 +16,7 @@ https://support.google.com/webmasters/answer/9008080#domain_name_verification
 ### Google Search Console API OAuth privileges
 Go to : https://developers.google.com/webmaster-tools/search-console-api-original/v3/quickstart/quickstart-python and follow the instructions under "Step 1: Enable the Search Console API"
 **During the instructions, Client ID and Client Secret will be communicated. Make sure to copy them somewhere - you'll need them later!**
+Create the OAuth client as a **Desktop app**: the script signs in through a browser window that redirects back to a temporary local address.
 
 ### List of all the websites to be added to the Google Search Console
 In Excel, create a list of all websites to be added to a Google Search Console.

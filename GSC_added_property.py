@@ -1,11 +1,8 @@
-import httplib2
 import pandas as pd
 import time
 
-from apiclient import errors
-from apiclient.discovery import build
-from oauth2client.client import OAuth2WebServerFlow
-from requests.exceptions import HTTPError
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
 
 clientId = str(input("Please enter the Google API client ID:"))
 clientSecret = str(input("Please enter the Google API secret"))
@@ -17,18 +14,20 @@ website_list_clean = [website for website in website_list if str(website) != "na
 
 OAUTH_SCOPE = 'https://www.googleapis.com/auth/webmasters'
 
-REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
+# Google retired the copy-paste (out-of-band) OAuth flow, so sign-in now goes
+# through a temporary local redirect: a browser opens, you approve, done.
+flow = InstalledAppFlow.from_client_config(
+    {'installed': {
+        'client_id': clientId,
+        'client_secret': clientSecret,
+        'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
+        'token_uri': 'https://oauth2.googleapis.com/token',
+    }},
+    scopes=[OAUTH_SCOPE],
+)
+credentials = flow.run_local_server(port=0)
 
-flow = OAuth2WebServerFlow(clientId, clientSecret, OAUTH_SCOPE, REDIRECT_URI)
-authorize_url = flow.step1_get_authorize_url()
-print('Go to the following link in your browser: ' + authorize_url)
-code = input('Enter verification code: ').strip()
-credentials = flow.step2_exchange(code)
-
-http = httplib2.Http()
-http = credentials.authorize(http)
-
-webmasters_service = build('webmasters', 'v3', http=http)
+webmasters_service = build('webmasters', 'v3', credentials=credentials)
 
 for website in website_list_clean:
   try:
